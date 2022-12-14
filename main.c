@@ -71,7 +71,6 @@ void exec_ast(t_tree *tree, char **env)
         int pfd[2];
 
         pipe1(pfd);
-
         if (fork1() == 0)
         {
             close(1);
