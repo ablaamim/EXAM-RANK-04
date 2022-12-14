@@ -12,13 +12,19 @@
 
 #include "microshell.h"
 
+void putstr(int fd, char *str)
+{
+	while (*str)
+		write(fd, str++, 1);
+}
+
 int	fork1()
 {
 	int pid = fork();
 
 	if (pid == -1)
 		write(2, "error : fatal\n", sizeof("error : fatal\n"));
-	return pid;
+	return (pid);
 }
 
 int	pipe1(int fd[2])
@@ -26,7 +32,7 @@ int	pipe1(int fd[2])
 	int ret = pipe(fd);
 	if (ret == -1)
 		write(2, "error : fatal\n", sizeof("error : fatal\n"));
-	return ret;
+	return (ret);
 }
 
 void	cd(char **cmd)
@@ -72,7 +78,7 @@ void	exec_ast(t_tree *tree, char **env)
 			write(2, "\n", 1);
 			exit(1);
 		}
-		waitpid(pid, NULL ,0);
+		waitpid(pid, 0x0 ,0x0);
 		return ;
 	}
 	if (tree->type == SEMICOLON)
@@ -114,12 +120,13 @@ void	exec_ast(t_tree *tree, char **env)
 
 int	semico_check(char ***av)
 {
-	int flag
-	flag = 0;
+	int flag;
+
+	flag = 0x0;
 	while (**av && strcmp(**av, ";") == 0)
 	{
 		flag = 1;
-		**av = NULL;
+		**av = 0x0;
 		(*av)++;
 	}
 	return flag;
@@ -130,7 +137,7 @@ t_tree	*parse_list(char ***av)
 	t_tree	*ret;
 
 	if (!**av)
-		return NULL;
+		return (0x0);
 	ret = tree_constructor(EXEC, *av, 0, 0);
 	while (**av && !strcmp(**av, ";") && !strcmp(**av, "|"))
 		(*av)++;
@@ -142,20 +149,20 @@ t_tree *parse_pline(char ***av)
 	t_tree	*ret;
 
 	if (!**av)
-		return NULL;
+		return (0x0);
 	ret = parse_list(av);
 	if (!ret)
-		return NULL;
+		return (0x0);
 	while (**av && strcmp(**av, "|") == 0)
 	{
-		**av = NULL;
+		**av = 0x0;
 		(*av)++;
 		ret = tree_constructor(PIPE, 0, ret, NULL);
 		ret->right = parse_list(av);
 		if (!ret->right)
-			return NULL;
+			return (0x0);
 	}
-	return ret;
+	return (ret);
 }
 
 t_tree	*parse_cmd(char ***av)
@@ -163,10 +170,10 @@ t_tree	*parse_cmd(char ***av)
 	t_tree *ret;
 
 	if (!**av)
-		return NULL;
+		return (0x0);
 	ret = parse_pline(av);
 	if (!ret)
-		return NULL;
+		return (0x0);
 	if (**av && semico_check(av))
 	{
 		ret = tree_constructor(SEMICOLON, 0, ret, parse_cmd(av));
@@ -177,6 +184,7 @@ t_tree	*parse_cmd(char ***av)
 t_tree *tree_constructor(t_type type, char **cmd, t_tree *left, t_tree *right)
 {
 	t_tree *ret = malloc(sizeof(t_tree));
+
 	if (!ret)
 		write(2, "error : fatal\n", 14);
 	ret->type = type;
@@ -195,7 +203,7 @@ void tree_debug(t_tree *tree, int level)
 	if (tree->type == PIPE)
 		printf("PIPE\n");
 	else if (tree->type == SEMICOLON)
-		printf("FG\n");
+		printf("SEMICO\n");
 	else if (tree->type == EXEC)
 	{
 		printf("EXEC: ");
@@ -211,19 +219,19 @@ void tree_debug(t_tree *tree, int level)
 
 int main(int ac, char **av, char **env)
 {
-	av++;
+	(void)	env;
 
-	t_tree *tree = parse_cmd(&av);
-	tree_debug(tree, 0);
-	exec_ast(tree, env);
-	exit(0);
-	(void)ac;
-	(void)av;
-	(void)env;
-}
-
-void putstr(int fd, char *str)
-{
-	while (*str)
-		write(fd, str++, 1);
+	if (ac != 2)
+	{
+		write(2, "error: bad arguments\n", sizeof("error: bad arguments"));
+		return (EXIT_FAILURE);
+	}
+	else
+	{
+		av++;
+		t_tree *tree = parse_cmd(&av);
+		tree_debug(tree, 0);
+		exec_ast(tree, env);
+	}
+		return (EXIT_SUCCESS);
 }

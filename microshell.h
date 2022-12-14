@@ -35,6 +35,7 @@ typedef struct	s_tree
 	struct s_tree	*right;
 }	t_tree;
 
+void putstr(int fd, char *str);
 void	tree_debug(t_tree *tree, int level);
 int		semico_check(char ***av);
 int		fork1();
