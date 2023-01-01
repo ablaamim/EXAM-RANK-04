@@ -6,7 +6,7 @@
 /*   By: ablaamim <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/14 20:09:21 by ablaamim          #+#    #+#             */
-/*   Updated: 2022/12/14 20:54:38 by ablaamim         ###   ########.fr       */
+/*   Updated: 2023/01/01 22:42:10 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ int	fork1()
 
 int	pipe1(int fd[2])
 {
-	int ret = pipe(fd);
+	int	ret;
+
+	ret = pipe(fd);
 	if (ret == -1)
 		write(2, "error : fatal\n", sizeof("error : fatal\n"));
 	return (ret);
@@ -37,8 +39,9 @@ int	pipe1(int fd[2])
 
 void	cd(char **cmd)
 {
-	int ac = 0;
+	int	ac;
 
+	ac = 0;
 	while (cmd[ac])
 		ac++;
 	if (ac != 2)
